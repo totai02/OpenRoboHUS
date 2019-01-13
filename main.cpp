@@ -4,15 +4,16 @@
 #include <wiringPi.h>
 
 #define BTN1 7
+#define BTN2 0
 
 using namespace std;
 using namespace cv;
 
 void initPin()
 {
-    pinMode(BTN1, INPUT);
+    pinMode(BTN2, INPUT);
 
-    pullUpDnControl(BTN1, PUD_UP);
+    pullUpDnControl(BTN2, PUD_UP);
 }
 
 int main(int argc, char *argv[])
@@ -25,16 +26,19 @@ int main(int argc, char *argv[])
     namedWindow( "Video", CV_WINDOW_AUTOSIZE );
 
     VideoCapture capture = VideoCapture(0);
+    VideoWriter writer("video.avi",CV_FOURCC('M','J','P','G'), 30, Size(640, 480));
     Mat src, binary;
 
     while (waitKey(1) != 'q')
     {
-        if (digitalRead(BTN1) == LOW)
+        if (digitalRead(BTN2) == LOW)
         {
             capture >> src;
+            writer.write(src);
             imshow("Video", src);
-            delay(250);
         }
     }
+
+    writer.release();
     return 0;
 }
