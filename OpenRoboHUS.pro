@@ -6,4 +6,4 @@ CONFIG -= qt
 SOURCES += \
     main.cpp
 
-LIBS += -lwiringPi
+LIBS += -lpigpio -lpthread
