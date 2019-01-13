@@ -5,6 +5,7 @@
 #define BTN2 0
 #define BTN3 21
 #define BTN4 22
+#define LED 30
 
 using namespace std;
 
@@ -14,6 +15,7 @@ void initPin()
     pinMode(BTN2, INPUT);
     pinMode(BTN3, INPUT);
     pinMode(BTN4, INPUT);
+    pinMode(LED, OUTPUT);
 
     pullUpDnControl(BTN1, PUD_UP);
     pullUpDnControl(BTN2, PUD_UP);
@@ -29,30 +31,15 @@ int main(int argc, char *argv[])
     //init pin
     initPin();
 
+    digitalWrite(LED, LOW);
+
     // loop
     while (true)
     {
         if (digitalRead(BTN1) == LOW)
         {
-            cout << "BTN1 press." << endl;
-            delay(250);
-        }
-
-        if (digitalRead(BTN2) == LOW)
-        {
-            cout << "BTN2 press." << endl;
-            delay(250);
-        }
-
-        if (digitalRead(BTN3) == LOW)
-        {
-            cout << "BTN3 press." << endl;
-            delay(250);
-        }
-
-        if (digitalRead(BTN4) == LOW)
-        {
-            cout << "BTN4 press." << endl;
+            int currentState = digitalRead(LED);
+            digitalWrite(LED, !currentState);
             delay(250);
         }
     }
