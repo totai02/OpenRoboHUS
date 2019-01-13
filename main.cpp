@@ -7,11 +7,8 @@
 
 using namespace std;
 
-int run = 1;
-
 void stop(int signum)
 {
-   run = 0;
    gpioServo(SERVO1, 0);
    gpioTerminate();
 }
