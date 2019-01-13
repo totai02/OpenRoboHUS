@@ -1,67 +1,50 @@
 #include <iostream>
-#include <signal.h>
-#include <pigpio.h>
+#include <softPwm.h>
 #include <wiringPi.h>
-#include <cmath>
 
-#define SERVO1 19
 #define BTN1 7
 #define BTN2 0
-#define BTN3 21
-#define BTN4 22
+
+#define PWM1 16
+#define PWM2 6
 
 using namespace std;
-
-void stop(int signum)
-{
-   gpioServo(SERVO1, 0);
-   gpioTerminate();
-}
-
-void setServo(int servo, float angle)
-{
-    int gpioValue = round(angle / 180 * 2000) + 500;
-    gpioServo(servo, gpioValue);
-}
 
 void initPin()
 {
     pinMode(BTN1, INPUT);
-    pinMode(BTN2, INPUT);
-    pinMode(BTN3, INPUT);
-    pinMode(BTN4, INPUT);
+    softPwmCreate(PWM1, 0, 255);
+    softPwmCreate(PWM2, 0, 255);
 
     pullUpDnControl(BTN1, PUD_UP);
-    pullUpDnControl(BTN2, PUD_UP);
-    pullUpDnControl(BTN3, PUD_UP);
-    pullUpDnControl(BTN4, PUD_UP);
 }
 
 int main(int argc, char *argv[])
 {
-    // PiGpio setup
-    if (gpioInitialise() < 0) return -1;
-
     // wiringPi setup
     wiringPiSetup () ;
 
-    setServo(SERVO1, 10);
+    initPin();
+
+    int speed = 100;
 
     // loop
     while (true)
     {
         if (digitalRead(BTN1) == LOW)
         {
-            for (int angle = 10; angle <= 180; angle+=10)
-            {
-                setServo(SERVO1, angle);
-                time_sleep(0.01);
-            }
-            for (int angle = 180; angle >= 10; angle-=10)
-            {
-                setServo(SERVO1, angle);
-                time_sleep(0.01);
-            }
+            softPwmWrite(PWM1, speed);
+            softPwmWrite(PWM2, 0);
+        }
+        else if (digitalRead(BTN2) == LOW)
+        {
+            softPwmWrite(PWM1, 0);
+            softPwmWrite(PWM2, speed);
+        }
+        else
+        {
+            softPwmWrite(PWM1, 0);
+            softPwmWrite(PWM2, 0);
         }
     }
 
