@@ -6,4 +6,5 @@ CONFIG -= qt
 SOURCES += \
     main.cpp
 
+LIBS += `pkg-config opencv --cflags --libs`
 LIBS += -lpigpio -lwiringPi
