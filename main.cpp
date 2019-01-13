@@ -1,46 +1,67 @@
 #include <iostream>
-#include <pigpio.h>
 #include <signal.h>
+#include <pigpio.h>
+#include <wiringPi.h>
+#include <cmath>
 
 #define SERVO1 19
+#define BTN1 7
+#define BTN2 0
+#define BTN3 21
+#define BTN4 22
 
 using namespace std;
 
-int run = 1;
-
 void stop(int signum)
 {
-    run = 0;
-    gpioServo(SERVO1, 0);
-    gpioTerminate();
+   gpioServo(SERVO1, 0);
+   gpioTerminate();
 }
 
-void setServo(int servo, int angle)
+void setServo(int servo, float angle)
 {
-    int gpioValue = angle * 2000 / 180 + 500;
+    int gpioValue = round(angle / 180 * 2000) + 500;
     gpioServo(servo, gpioValue);
 }
 
-int main()
+void initPin()
 {
-    // gpio setup
-    if (gpioInitialise() < 0) return 1;
-    gpioSetSignalFunc(SIGINT, stop);
+    pinMode(BTN1, INPUT);
+    pinMode(BTN2, INPUT);
+    pinMode(BTN3, INPUT);
+    pinMode(BTN4, INPUT);
+
+    pullUpDnControl(BTN1, PUD_UP);
+    pullUpDnControl(BTN2, PUD_UP);
+    pullUpDnControl(BTN3, PUD_UP);
+    pullUpDnControl(BTN4, PUD_UP);
+}
+
+int main(int argc, char *argv[])
+{
+    // PiGpio setup
+    if (gpioInitialise() < 0) return -1;
+
+    // wiringPi setup
+    wiringPiSetup () ;
 
     setServo(SERVO1, 0);
 
-    int servoDir = 1;
-    int angle = 0;
-
-    while (run)
+    // loop
+    while (true)
     {
-        if (angle + servoDir > 180 || angle + servoDir < 0)
+        if (digitalRead(BTN1) == LOW)
         {
-            servoDir = -servoDir;
+            setServo(SERVO1, 10);
         }
-        angle = angle + servoDir;
-        setServo(SERVO1, angle);
-        time_sleep(0.02);
+        if (digitalRead(BTN2) == LOW)
+        {
+            setServo(SERVO1, 50);
+        }
+        if (digitalRead(BTN3) == LOW)
+        {
+            setServo(SERVO1, 120);
+        }
     }
 
     return 0;
