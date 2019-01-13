@@ -1,25 +1,61 @@
 #include <iostream>
-#include <string>
+#include <wiringPi.h>
+
+#define BTN1 7
+#define BTN2 0
+#define BTN3 21
+#define BTN4 22
 
 using namespace std;
 
+void initPin()
+{
+    pinMode(BTN1, INPUT);
+    pinMode(BTN2, INPUT);
+    pinMode(BTN3, INPUT);
+    pinMode(BTN4, INPUT);
+
+    pullUpDnControl(BTN1, PUD_UP);
+    pullUpDnControl(BTN2, PUD_UP);
+    pullUpDnControl(BTN3, PUD_UP);
+    pullUpDnControl(BTN4, PUD_UP);
+}
+
 int main(int argc, char *argv[])
 {
-    string name, address;
-    int age;
+    // wiringPi setup
+    wiringPiSetup () ;
 
-    cout << "Nhập tên của bạn: ";
-    getline (cin, name);
+    //init pin
+    initPin();
 
-    cout << "Nhập tuổi: ";
-    cin >> age;
+    // loop
+    while (true)
+    {
+        if (digitalRead(BTN1) == LOW)
+        {
+            cout << "BTN1 press." << endl;
+            delay(250);
+        }
 
-    cout << "Địa chỉ: ";
-    cin.ignore();           // câu lệnh dùng để xóa buffer, nếu ko có lệnh này, address sẽ nhận dấu "\n"
-                            // của lúc nhập tuổi để lại.
-    getline (cin, address);
+        if (digitalRead(BTN2) == LOW)
+        {
+            cout << "BTN2 press." << endl;
+            delay(250);
+        }
 
-    cout << "Tên: " << name << ", Tuổi: " << age << ", Địa chỉ: " << address << endl;
+        if (digitalRead(BTN3) == LOW)
+        {
+            cout << "BTN3 press." << endl;
+            delay(250);
+        }
+
+        if (digitalRead(BTN4) == LOW)
+        {
+            cout << "BTN4 press." << endl;
+            delay(250);
+        }
+    }
 
     return 0;
 }
