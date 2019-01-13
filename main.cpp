@@ -1,65 +1,46 @@
 #include <iostream>
-#include <wiringPi.h>
+#include <signal.h>
+#include <pigpio.h>
+#include <cmath>
 
-#define BTN1 7
-#define BTN2 0
-#define BTN3 21
-#define BTN4 22
-#define LED 30
+#define SERVO1 19
 
 using namespace std;
 
-void initPin()
-{
-    pinMode(BTN1, INPUT);
-    pinMode(BTN2, INPUT);
-    pinMode(BTN3, INPUT);
-    pinMode(BTN4, INPUT);
-    pinMode(LED, OUTPUT);
+int run = 1;
 
-    pullUpDnControl(BTN1, PUD_UP);
-    pullUpDnControl(BTN2, PUD_UP);
-    pullUpDnControl(BTN3, PUD_UP);
-    pullUpDnControl(BTN4, PUD_UP);
+void stop(int signum)
+{
+   run = 0;
+   gpioServo(SERVO1, 0);
+   gpioTerminate();
+}
+
+void setServo(int servo, float angle)
+{
+    int gpioValue = round(angle / 180 * 2000) + 500;
+    gpioServo(servo, gpioValue);
 }
 
 int main(int argc, char *argv[])
 {
-    // wiringPi setup
-    wiringPiSetup () ;
+    // PiGpio setup
+    if (gpioInitialise() < 0) return -1;
 
-    //init pin
-    initPin();
+    setServo(SERVO1, 0);
 
-    digitalWrite(LED, LOW);
-
+    int servoDir = 1;
+    int angle = 0;
     // loop
-    int lanBam = 0;
     while (true)
     {
-        if (digitalRead(BTN3) == LOW)
+        if (angle + servoDir > 180 || angle + servoDir < 0)
         {
-            lanBam++;
-            delay(250);
+            servoDir = -servoDir;
         }
-
-        if (digitalRead(BTN4) == LOW)   // Phải ấn giữ phím, vì đợi hết chu kì đèn nháy, mới đến lệnh này
-        {
-            lanBam = 0;
-            digitalWrite(LED, LOW);
-            delay(250);
-        }
-
-        if (lanBam == 1)
-        {
-            digitalWrite(LED, HIGH);
-        }
-
-        if (lanBam == 2)
-        {
-            digitalWrite(LED, !digitalRead(LED));
-            delay(1000);
-        }
+        angle = angle + servoDir;
+        setServo(SERVO1, angle);
+        time_sleep(0.01);
     }
 
     return 0;
