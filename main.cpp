@@ -34,10 +34,32 @@ int main(int argc, char *argv[])
     digitalWrite(LED, LOW);
 
     // loop
+    int lanBam = 0;
     while (true)
     {
-        digitalWrite(LED, !digitalRead(BTN2));
-        cout << "LED: " << (digitalRead(LED) ? "ON" : "OFF") << endl;
+        if (digitalRead(BTN3) == LOW)
+        {
+            lanBam++;
+            delay(250);
+        }
+
+        if (digitalRead(BTN4) == LOW)   // Phải ấn giữ phím, vì đợi hết chu kì đèn nháy, mới đến lệnh này
+        {
+            lanBam = 0;
+            digitalWrite(LED, LOW);
+            delay(250);
+        }
+
+        if (lanBam == 1)
+        {
+            digitalWrite(LED, HIGH);
+        }
+
+        if (lanBam == 2)
+        {
+            digitalWrite(LED, !digitalRead(LED));
+            delay(1000);
+        }
     }
 
     return 0;
