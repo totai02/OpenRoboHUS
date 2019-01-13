@@ -36,12 +36,8 @@ int main(int argc, char *argv[])
     // loop
     while (true)
     {
-        if (digitalRead(BTN1) == LOW)
-        {
-            int currentState = digitalRead(LED);
-            digitalWrite(LED, !currentState);
-            delay(250);
-        }
+        digitalWrite(LED, !digitalRead(BTN2));
+        cout << "LED: " << (digitalRead(LED) ? "ON" : "OFF") << endl;
     }
 
     return 0;
